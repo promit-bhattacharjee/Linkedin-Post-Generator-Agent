@@ -22,6 +22,7 @@ app = FastAPI(title="AI LinkedIn Post Generator API")
 class PostRequest(BaseModel):
     """Input from the user"""
     topic: str
+    language: str | None = None
 
 class TopicClassification(BaseModel):
     """Internal schema for the router"""
@@ -56,17 +57,17 @@ router_prompt = ChatPromptTemplate.from_template(
 
 tech_template = """You are a Technology Expert. 
 Analyze the topic: "{topic}".
-1. Detect the input language and correct the topic name grammatically in that language.
+1. {language_instruction} and correct the topic name grammatically.
 2. Classify as 'technology'.
-3. Write a 2-4 paragraph LinkedIn post in the detected language.
+3. Write a 2-4 paragraph LinkedIn post in the required language.
 4. Use industry terms, professional icons, and emojis.
 5. Provide a strategic engagement question at the end."""
 
 general_template = """You are a Professional Content Creator. 
 Analyze the topic: "{topic}".
-1. Detect the input language and correct the topic name grammatically in that language.
+1. {language_instruction} and correct the topic name grammatically.
 2. Classify as 'general'.
-3. Write a 2-4 paragraph LinkedIn post in the detected language.
+3. Write a 2-4 paragraph LinkedIn post in the required language.
 4. Use relatable icons, emojis, and a thoughtful call-to-action (CTA) at the end."""
 
 # 6. Chain Definitions
@@ -84,14 +85,18 @@ async def generate_post(request: PostRequest):
         # Log for debugging in your terminal
         print(f"--- Routing Decision ---")
         print(f"Topic: {request.topic}")
+        print(f"Language: {request.language}")
         print(f"Decision: {classification.category}")
+
+        # Set language instruction
+        language_instruction = f"Write the post in {request.language}" if request.language else "Detect the input language and write the post in that language"
 
         # Step 2: Conditional Handover logic
         # Using a more robust check for 'technology'
         if "technology" in classification.category.lower():
-            result = await tech_writer.ainvoke({"topic": request.topic})
+            result = await tech_writer.ainvoke({"topic": request.topic, "language_instruction": language_instruction})
         else:
-            result = await general_writer.ainvoke({"topic": request.topic})
+            result = await general_writer.ainvoke({"topic": request.topic, "language_instruction": language_instruction})
             
         return result
         
