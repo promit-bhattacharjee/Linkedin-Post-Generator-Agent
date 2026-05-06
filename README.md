@@ -31,7 +31,19 @@ The application follows a clean, 2-step LangChain workflow:
    - If the category contains `"technology"`, the execution is handed over to the `tech_writer` chain.
    - If the category is anything else, the execution is handed over to the `general_writer` chain.
    - A `language_instruction` is dynamically injected into the writer's prompt. If the user provided a language (e.g., "Spanish"), it instructs the LLM: `"Write the post in Spanish"`. If left blank, it instructs the LLM to `"Detect the input language and write the post in that language"`.
-   - The selected writer generates the post using `llm.with_structured_output(FinalOutput)`, ensuring the final payload contains perfectly typed fields (topic name, confidence scores, and the formatted post) which is then returned to the user interface.
+3. The selected writer generates the post using `llm.with_structured_output(FinalOutput)`, ensuring the final payload contains perfectly typed fields (topic name, confidence scores, and the formatted post) which is then returned to the user interface.
+
+## Project Structure
+```text
+Linkedin-Post-Generator-Agent/
+├── main.py             # FastAPI app & LangChain Agent logic
+├── index.html          # Web UI with persistence & LinkedIn branding
+├── README.md           # Project documentation & assignment report
+├── requirements.txt    # Python dependencies
+├── .env                # API Keys & Environment variables (Secret)
+├── usecase.png         #usecase diagram  
+└── .gitignore          # Git exclusion rules
+```
 
 ## How to Run
 1. **Install dependencies**:
