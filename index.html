@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LinkedIn Post Generator</title>
-    <!-- Font Awesome for LinkedIn Logo -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -28,6 +27,12 @@
         .container {
             max-width: 800px;
             margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
             background: var(--card-bg);
             padding: 30px;
             border-radius: 8px;
@@ -86,12 +91,6 @@
             transition: border-color 0.2s;
         }
 
-        input[type="text"]:focus, select:focus {
-            outline: none;
-            border-color: var(--linkedin-blue);
-            box-shadow: 0 0 0 1px var(--linkedin-blue);
-        }
-
         button.primary {
             background-color: var(--linkedin-blue);
             color: white;
@@ -115,7 +114,6 @@
 
         button.primary:disabled {
             background-color: #ccc;
-            cursor: not-allowed;
         }
 
         .loading {
@@ -158,17 +156,6 @@
             display: flex;
             align-items: center;
             gap: 5px;
-            transition: all 0.2s;
-        }
-
-        .copy-btn:hover {
-            background-color: #f0f7ff;
-        }
-
-        .copy-btn.success {
-            background-color: #057642;
-            color: white;
-            border-color: #057642;
         }
 
         .post-card {
@@ -192,119 +179,188 @@
             border: 1px solid var(--border-color);
         }
 
-        .meta-item {
+        .meta-item { display: flex; flex-direction: column; gap: 4px; }
+        .meta-label { font-size: 0.75rem; font-weight: 700; color: #777; text-transform: uppercase; }
+        .meta-value { font-size: 0.9rem; font-weight: 600; color: #333; }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; background: #e8f3ff; color: var(--linkedin-blue); }
+
+        /* History Section Styles */
+        .history-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .history-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #444;
+        }
+
+        .clear-btn {
+            background: none;
+            border: none;
+            color: #cc0000;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .history-list {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 10px;
+            max-height: 400px;
+            overflow-y: auto;
         }
 
-        .meta-label {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: #777;
-            text-transform: uppercase;
+        .history-item {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .meta-value {
-            font-size: 0.9rem;
+        .history-item:hover {
+            background: #f0f7ff;
+            border-color: var(--linkedin-blue);
+        }
+
+        .history-item-topic {
             font-weight: 600;
-            color: #333;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            background: #e8f3ff;
+            font-size: 0.9rem;
             color: var(--linkedin-blue);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 80%;
         }
 
-        @media (max-width: 600px) {
-            .input-row {
-                flex-direction: column;
-            }
-            .form-group.small {
-                flex: 1;
-            }
+        .history-item-date {
+            font-size: 0.75rem;
+            color: #999;
+        }
+
+        .empty-history {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <i class="fab fa-linkedin"></i>
-            <h1>LinkedIn Post Generator</h1>
-        </div>
-        
-        <div class="input-row">
-            <div class="form-group">
-                <label for="topic">Topic</label>
-                <input type="text" id="topic" placeholder="e.g., AI in Healthcare, Future of Remote Work" required>
+        <div class="card">
+            <div class="header">
+                <i class="fab fa-linkedin"></i>
+                <h1>LinkedIn Post Generator</h1>
             </div>
             
-            <div class="form-group small">
-                <label for="language">Language</label>
-                <select id="language">
-                    <option value="">Auto-Detect</option>
-                    <option value="English">English</option>
-                    <option value="Spanish">Spanish</option>
-                    <option value="French">French</option>
-                    <option value="German">German</option>
-                    <option value="Hindi">Hindi</option>
-                    <option value="Bengali">Bengali</option>
-                    <option value="Arabic">Arabic</option>
-                    <option value="Chinese">Chinese</option>
-                    <option value="Japanese">Japanese</option>
-                    <option value="Portuguese">Portuguese</option>
-                    <option value="Russian">Russian</option>
-                    <option value="Italian">Italian</option>
-                    <option value="Turkish">Turkish</option>
-                    <option value="Vietnamese">Vietnamese</option>
-                </select>
+            <div class="input-row">
+                <div class="form-group">
+                    <label for="topic">Topic</label>
+                    <input type="text" id="topic" placeholder="e.g., AI in Healthcare, Future of Remote Work" required>
+                </div>
+                
+                <div class="form-group small">
+                    <label for="language">Language</label>
+                    <select id="language">
+                        <option value="">Auto-Detect</option>
+                        <option value="English">English</option>
+                        <option value="Spanish">Spanish</option>
+                        <option value="French">French</option>
+                        <option value="German">German</option>
+                        <option value="Hindi">Hindi</option>
+                        <option value="Bengali">Bengali</option>
+                        <option value="Arabic">Arabic</option>
+                        <option value="Chinese">Chinese</option>
+                        <option value="Japanese">Japanese</option>
+                        <option value="Portuguese">Portuguese</option>
+                        <option value="Russian">Russian</option>
+                        <option value="Italian">Italian</option>
+                        <option value="Turkish">Turkish</option>
+                        <option value="Vietnamese">Vietnamese</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button id="generateBtn" class="primary" onclick="generatePost()">
+                <i class="fas fa-magic"></i> Generate Post
+            </button>
+            
+            <div class="loading" id="loading">
+                <i class="fas fa-spinner fa-spin"></i> Analyzing topic and generating content...
+            </div>
+            
+            <div class="result" id="result">
+                <div class="result-header">
+                    <h3>Generated LinkedIn Post</h3>
+                    <button class="copy-btn" id="copyBtn" onclick="copyToClipboard()">
+                        <i class="far fa-copy"></i> Copy
+                    </button>
+                </div>
+                
+                <div class="post-card" id="postContent"></div>
+
+                <div class="metadata">
+                    <div class="meta-item">
+                        <span class="meta-label">Topic Name</span>
+                        <span class="meta-value" id="res_topic_name">-</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Classification</span>
+                        <span class="meta-value"><span class="badge" id="res_topic_class">-</span></span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Class Confidence</span>
+                        <span class="meta-value" id="res_topic_confidence">-</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Trans. Confidence</span>
+                        <span class="meta-value" id="res_trans_confidence">-</span>
+                    </div>
+                </div>
             </div>
         </div>
-        
-        <button id="generateBtn" class="primary" onclick="generatePost()">
-            <i class="fas fa-magic"></i> Generate Post
-        </button>
-        
-        <div class="loading" id="loading">
-            <i class="fas fa-spinner fa-spin"></i> Analyzing topic and generating content...
-        </div>
-        
-        <div class="result" id="result">
-            <div class="result-header">
-                <h3>Generated LinkedIn Post</h3>
-                <button class="copy-btn" id="copyBtn" onclick="copyToClipboard()">
-                    <i class="far fa-copy"></i> Copy
+
+        <!-- History Section -->
+        <div class="history-card">
+            <div class="history-header">
+                <h3>Recent Generations</h3>
+                <button class="clear-btn" onclick="clearHistory()">
+                    <i class="fas fa-trash-alt"></i> Clear History
                 </button>
             </div>
-            
-            <div class="post-card" id="postContent"></div>
-
-            <div class="metadata">
-                <div class="meta-item">
-                    <span class="meta-label">Topic Name</span>
-                    <span class="meta-value" id="res_topic_name">-</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Classification</span>
-                    <span class="meta-value"><span class="badge" id="res_topic_class">-</span></span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Class Confidence</span>
-                    <span class="meta-value" id="res_topic_confidence">-</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Trans. Confidence</span>
-                    <span class="meta-value" id="res_trans_confidence">-</span>
-                </div>
+            <div id="historyList" class="history-list">
+                <!-- History items will appear here -->
             </div>
         </div>
     </div>
 
     <script>
+        // Load history on startup
+        window.onload = function() {
+            displayHistory();
+        };
+
         async function generatePost() {
             const topic = document.getElementById('topic').value.trim();
             const language = document.getElementById('language').value;
@@ -336,23 +392,79 @@
 
                 const data = await response.json();
                 
-                // Populate metadata fields
-                document.getElementById('postContent').innerText = data.post;
-                document.getElementById('res_topic_name').innerText = data.topic_name;
-                document.getElementById('res_topic_class').innerText = data.topic_class.toUpperCase();
-                document.getElementById('res_topic_confidence').innerText = (data.topic_confidence * 100).toFixed(1) + '%';
-                document.getElementById('res_trans_confidence').innerText = (data.translation_confidence * 100).toFixed(1) + '%';
+                // Show current result
+                renderResult(data);
                 
-                result.style.display = 'block';
-                // Reset copy button
-                const copyBtn = document.getElementById('copyBtn');
-                copyBtn.innerHTML = '<i class="far fa-copy"></i> Copy';
-                copyBtn.classList.remove('success');
+                // Save to History
+                saveToHistory(data);
+                
             } catch (error) {
                 alert('Error: ' + error.message);
             } finally {
                 btn.disabled = false;
                 loading.style.display = 'none';
+            }
+        }
+
+        function renderResult(data) {
+            document.getElementById('postContent').innerText = data.post;
+            document.getElementById('res_topic_name').innerText = data.topic_name;
+            document.getElementById('res_topic_class').innerText = data.topic_class.toUpperCase();
+            document.getElementById('res_topic_confidence').innerText = (data.topic_confidence * 100).toFixed(1) + '%';
+            document.getElementById('res_trans_confidence').innerText = (data.translation_confidence * 100).toFixed(1) + '%';
+            
+            document.getElementById('result').style.display = 'block';
+            
+            const copyBtn = document.getElementById('copyBtn');
+            copyBtn.innerHTML = '<i class="far fa-copy"></i> Copy';
+            copyBtn.style.backgroundColor = 'transparent';
+            copyBtn.style.color = 'var(--linkedin-blue)';
+        }
+
+        function saveToHistory(data) {
+            let history = JSON.parse(localStorage.getItem('post_history') || '[]');
+            
+            // Add current timestamp
+            data.timestamp = new Date().toLocaleString();
+            
+            // Add to the beginning of the array
+            history.unshift(data);
+            
+            // Keep only the last 20 generations
+            if (history.length > 20) history.pop();
+            
+            localStorage.setItem('post_history', JSON.stringify(history));
+            displayHistory();
+        }
+
+        function displayHistory() {
+            const history = JSON.parse(localStorage.getItem('post_history') || '[]');
+            const list = document.getElementById('historyList');
+            
+            if (history.length === 0) {
+                list.innerHTML = '<div class="empty-history">No recent generations yet.</div>';
+                return;
+            }
+            
+            list.innerHTML = history.map((item, index) => `
+                <div class="history-item" onclick="loadFromHistory(${index})">
+                    <span class="history-item-topic">${item.topic_name}</span>
+                    <span class="history-item-date">${item.timestamp}</span>
+                </div>
+            `).join('');
+        }
+
+        function loadFromHistory(index) {
+            const history = JSON.parse(localStorage.getItem('post_history') || '[]');
+            const item = history[index];
+            renderResult(item);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function clearHistory() {
+            if (confirm('Are you sure you want to clear your generation history?')) {
+                localStorage.removeItem('post_history');
+                displayHistory();
             }
         }
 
@@ -362,13 +474,13 @@
             
             navigator.clipboard.writeText(text).then(() => {
                 btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                btn.classList.add('success');
+                btn.style.backgroundColor = '#057642';
+                btn.style.color = 'white';
                 setTimeout(() => {
                     btn.innerHTML = '<i class="far fa-copy"></i> Copy';
-                    btn.classList.remove('success');
+                    btn.style.backgroundColor = 'transparent';
+                    btn.style.color = 'var(--linkedin-blue)';
                 }, 3000);
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
             });
         }
     </script>

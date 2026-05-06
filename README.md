@@ -15,6 +15,7 @@ This project is a multi-agent AI system built using **FastAPI** and **LangChain*
    - **Language Dropdown:** Support for 15+ major languages.
    - **Copy to Clipboard:** One-click copying for easy posting.
    - **Full Metadata Visibility:** Displays the AI's internal reasoning (Classification, Confidence scores, Corrected Topic Name).
+   - **Persistent Generation History:** Uses `localStorage` to save your last 20 generations, allowing you to review and restore previous results even after a page refresh.
 
 ## Agent Workflow & Routing Logic
 The application follows a clean, 2-step LangChain workflow:
