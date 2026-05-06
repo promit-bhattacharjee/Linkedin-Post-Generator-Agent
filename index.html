@@ -3,50 +3,303 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI LinkedIn Post Generator</title>
+    <title>LinkedIn Post Generator</title>
+    <!-- Font Awesome for LinkedIn Logo -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f2ef; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        h1 { color: #0a66c2; text-align: center; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-weight: bold; margin-bottom: 8px; }
-        input[type="text"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
-        button { background-color: #0a66c2; color: white; border: none; padding: 14px 20px; font-size: 16px; font-weight: bold; border-radius: 24px; cursor: pointer; width: 100%; transition: background-color 0.3s; }
-        button:hover { background-color: #004182; }
-        .loading { display: none; text-align: center; margin-top: 20px; font-weight: bold; color: #666; }
-        .result { margin-top: 30px; display: none; }
-        .result h3 { border-bottom: 2px solid #0a66c2; padding-bottom: 10px; }
-        .post-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin-top: 15px; white-space: pre-wrap; font-size: 15px; line-height: 1.5; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .meta-info { margin-top: 15px; font-size: 13px; color: #666; display: flex; gap: 15px; flex-wrap: wrap; }
-        .badge { background: #e8f3ff; color: #0a66c2; padding: 4px 8px; border-radius: 4px; font-weight: 600; }
-        .helper-text { font-size: 13px; color: #666; margin-top: 4px; display: block; }
+        :root {
+            --linkedin-blue: #0a66c2;
+            --linkedin-hover: #004182;
+            --bg-color: #f3f2ef;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #e0e0e0;
+        }
+
+        body {
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Fira Sans", Ubuntu, Oxygen, "Oxygen Sans", Cantarell, "Droid Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Lucida Grande", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-color);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header i {
+            color: var(--linkedin-blue);
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: var(--linkedin-blue);
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .form-group.small {
+            flex: 0 0 200px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: var(--linkedin-blue);
+            box-shadow: 0 0 0 1px var(--linkedin-blue);
+        }
+
+        button.primary {
+            background-color: var(--linkedin-blue);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 24px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button.primary:hover {
+            background-color: var(--linkedin-hover);
+        }
+
+        button.primary:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .result {
+            margin-top: 30px;
+            display: none;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .result-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--linkedin-blue);
+        }
+
+        .copy-btn {
+            background: none;
+            border: 1px solid var(--linkedin-blue);
+            color: var(--linkedin-blue);
+            padding: 6px 12px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background-color: #f0f7ff;
+        }
+
+        .copy-btn.success {
+            background-color: #057642;
+            color: white;
+            border-color: #057642;
+        }
+
+        .post-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .metadata {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .meta-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #777;
+            text-transform: uppercase;
+        }
+
+        .meta-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            background: #e8f3ff;
+            color: var(--linkedin-blue);
+        }
+
+        @media (max-width: 600px) {
+            .input-row {
+                flex-direction: column;
+            }
+            .form-group.small {
+                flex: 1;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>AI LinkedIn Post Generator</h1>
-        
-        <div class="form-group">
-            <label for="topic">Topic</label>
-            <input type="text" id="topic" placeholder="e.g., AI in Healthcare, Remote Work Productivity" required>
+        <div class="header">
+            <i class="fab fa-linkedin"></i>
+            <h1>LinkedIn Post Generator</h1>
         </div>
         
-        <div class="form-group">
-            <label for="language">Preferred Language (Optional)</label>
-            <input type="text" id="language" placeholder="e.g., English, Spanish, Bengali">
-            <span class="helper-text">Leave blank to auto-detect from the topic.</span>
+        <div class="input-row">
+            <div class="form-group">
+                <label for="topic">Topic</label>
+                <input type="text" id="topic" placeholder="e.g., AI in Healthcare, Future of Remote Work" required>
+            </div>
+            
+            <div class="form-group small">
+                <label for="language">Language</label>
+                <select id="language">
+                    <option value="">Auto-Detect</option>
+                    <option value="English">English</option>
+                    <option value="Spanish">Spanish</option>
+                    <option value="French">French</option>
+                    <option value="German">German</option>
+                    <option value="Hindi">Hindi</option>
+                    <option value="Bengali">Bengali</option>
+                    <option value="Arabic">Arabic</option>
+                    <option value="Chinese">Chinese</option>
+                    <option value="Japanese">Japanese</option>
+                    <option value="Portuguese">Portuguese</option>
+                    <option value="Russian">Russian</option>
+                    <option value="Italian">Italian</option>
+                    <option value="Turkish">Turkish</option>
+                    <option value="Vietnamese">Vietnamese</option>
+                </select>
+            </div>
         </div>
         
-        <button id="generateBtn" onclick="generatePost()">Generate Professional Post</button>
+        <button id="generateBtn" class="primary" onclick="generatePost()">
+            <i class="fas fa-magic"></i> Generate Post
+        </button>
         
-        <div class="loading" id="loading">✨ Generating your professional post... Please wait.</div>
+        <div class="loading" id="loading">
+            <i class="fas fa-spinner fa-spin"></i> Analyzing topic and generating content...
+        </div>
         
         <div class="result" id="result">
-            <h3>Your LinkedIn Post</h3>
+            <div class="result-header">
+                <h3>Generated LinkedIn Post</h3>
+                <button class="copy-btn" id="copyBtn" onclick="copyToClipboard()">
+                    <i class="far fa-copy"></i> Copy
+                </button>
+            </div>
+            
             <div class="post-card" id="postContent"></div>
-            <div class="meta-info">
-                <div>Topic Class: <span class="badge" id="topicClass"></span></div>
-                <div>Topic Confidence: <span class="badge" id="topicConfidence"></span></div>
+
+            <div class="metadata">
+                <div class="meta-item">
+                    <span class="meta-label">Topic Name</span>
+                    <span class="meta-value" id="res_topic_name">-</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Classification</span>
+                    <span class="meta-value"><span class="badge" id="res_topic_class">-</span></span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Class Confidence</span>
+                    <span class="meta-value" id="res_topic_confidence">-</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Trans. Confidence</span>
+                    <span class="meta-value" id="res_trans_confidence">-</span>
+                </div>
             </div>
         </div>
     </div>
@@ -54,48 +307,69 @@
     <script>
         async function generatePost() {
             const topic = document.getElementById('topic').value.trim();
-            const language = document.getElementById('language').value.trim();
+            const language = document.getElementById('language').value;
             
             if (!topic) {
                 alert('Please enter a topic!');
                 return;
             }
 
-            // UI updates
-            document.getElementById('generateBtn').disabled = true;
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('result').style.display = 'none';
+            const btn = document.getElementById('generateBtn');
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+
+            btn.disabled = true;
+            loading.style.display = 'block';
+            result.style.display = 'none';
 
             try {
-                const payload = { topic: topic };
-                if (language) {
-                    payload.language = language;
-                }
-
                 const response = await fetch('/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({ topic, language: language || null })
                 });
 
                 if (!response.ok) {
-                    throw new Error(`Server error: ${response.statusText}`);
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Server error');
                 }
 
                 const data = await response.json();
                 
-                // Display results
+                // Populate metadata fields
                 document.getElementById('postContent').innerText = data.post;
-                document.getElementById('topicClass').innerText = data.topic_class.toUpperCase();
-                document.getElementById('topicConfidence').innerText = `${(data.topic_confidence * 100).toFixed(1)}%`;
+                document.getElementById('res_topic_name').innerText = data.topic_name;
+                document.getElementById('res_topic_class').innerText = data.topic_class.toUpperCase();
+                document.getElementById('res_topic_confidence').innerText = (data.topic_confidence * 100).toFixed(1) + '%';
+                document.getElementById('res_trans_confidence').innerText = (data.translation_confidence * 100).toFixed(1) + '%';
                 
-                document.getElementById('result').style.display = 'block';
+                result.style.display = 'block';
+                // Reset copy button
+                const copyBtn = document.getElementById('copyBtn');
+                copyBtn.innerHTML = '<i class="far fa-copy"></i> Copy';
+                copyBtn.classList.remove('success');
             } catch (error) {
-                alert('An error occurred while generating the post: ' + error.message);
+                alert('Error: ' + error.message);
             } finally {
-                document.getElementById('generateBtn').disabled = false;
-                document.getElementById('loading').style.display = 'none';
+                btn.disabled = false;
+                loading.style.display = 'none';
             }
+        }
+
+        function copyToClipboard() {
+            const text = document.getElementById('postContent').innerText;
+            const btn = document.getElementById('copyBtn');
+            
+            navigator.clipboard.writeText(text).then(() => {
+                btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                btn.classList.add('success');
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="far fa-copy"></i> Copy';
+                    btn.classList.remove('success');
+                }, 3000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
         }
     </script>
 </body>

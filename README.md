@@ -3,14 +3,18 @@
 This project is a multi-agent AI system built using **FastAPI** and **LangChain** that automatically generates professional LinkedIn posts based on a user-provided topic and an optional language preference.
 
 ## Features & Assignment Requirements Met
-1. **Accept User Inputs:** The system accepts a `Topic` (e.g., "AI in Healthcare") and an optional `Language` (e.g., English, Bengali). If language is not provided, it automatically detects it from the topic.
-2. **Conditional Routing Agent:** The system employs a "Structured Router" that analyzes the topic and classifies it as either `technology` or `general`.
-3. **Two Specialized Writer Agents:**
-   - **Tech Writer Agent:** Writes professional, industry-specific posts on technology topics.
-   - **General Writer Agent:** Writes professional, engaging posts on non-tech topics.
-4. **Post Formatting Constraints:** Each agent is instructed via prompt engineering to write 2-4 short paragraphs, use a professional/engaging tone, end with a thoughtful question/CTA, and use the user-selected (or auto-detected) language.
-5. **Conditional Handover:** In the FastAPI `/generate` endpoint, an `if/else` condition routes the execution to either the `tech_writer` or the `general_writer` based on the router's classification.
-6. **User Interface:** A clean `index.html` UI is served from the root endpoint, allowing easy testing of inputs and API responses.
+1. **Accept User Inputs:** The system accepts a `Topic` and a `Language` selection. If "Auto-Detect" is chosen, it automatically detects the language from the topic.
+2. **Conditional Routing Agent:** A "Structured Router" classifies topics as `technology` or `general` with high precision.
+3. **Specialized Writer Agents:**
+   - **Tech Writer Agent:** Focuses on professional, industry-specific tech content.
+   - **General Writer Agent:** Focuses on relatable, professional general-interest content.
+4. **Post Formatting:** Generates 2-4 short paragraphs with a professional tone and a strong Call-to-Action (CTA).
+5. **Conditional Handover:** Automated routing logic ensures the correct expert handles the specific topic.
+6. **Premium User Interface:**
+   - **LinkedIn Branding:** Professional UI with the official LinkedIn color palette and logo.
+   - **Language Dropdown:** Support for 15+ major languages.
+   - **Copy to Clipboard:** One-click copying for easy posting.
+   - **Full Metadata Visibility:** Displays the AI's internal reasoning (Classification, Confidence scores, Corrected Topic Name).
 
 ## Agent Workflow & Routing Logic
 The application follows a clean, 2-step LangChain workflow:
@@ -27,10 +31,16 @@ The application follows a clean, 2-step LangChain workflow:
    - The selected writer generates the post using `llm.with_structured_output(FinalOutput)`, ensuring the final payload contains perfectly typed fields (topic name, confidence scores, and the formatted post) which is then returned to the user interface.
 
 ## How to Run
-1. Install dependencies: `pip install fastapi uvicorn langchain_openai langchain_core python-dotenv pydantic`
-2. Ensure you have your API keys in the `.env` file (`BASE_URL`, `API_KEY`, `MODEL_NAME`).
-3. Run the server: `python main.py`
-4. Open your browser and go to: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+1. **Install dependencies**:
+   ```bash
+   pip install fastapi uvicorn langchain langchain-openai langchain-core python-dotenv pydantic pydantic-settings rich
+   ```
+2. **Setup environment**: Create a `.env` file with your `BASE_URL`, `API_KEY`, and `MODEL_NAME`.
+3. **Run the server**:
+   ```bash
+   python main.py
+   ```
+4. **Open the UI**: Go to [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your browser.
 
 ## Demonstration Examples
 
