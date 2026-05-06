@@ -50,37 +50,6 @@ Linkedin-Post-Generator-Agent/
 You can watch the full demonstration of the agent in action here:
 **[Link to Demo Video (e.g., YouTube/Loom/Drive)]**
 
-## System Use Case Diagram
-The following diagram illustrates the interaction between the User, the LinkedIn Post Generator System, and the External LLM Provider:
-
-```mermaid
-useCaseDiagram
-    actor User
-    actor "External LLM API" as LLM
-
-    package "LinkedIn Post Generator System" {
-        usecase UC1 as "Input Topic & Language"
-        usecase UC2 as "Generate Professional Post"
-        usecase UC3 as "Route Topic (Tech/General)"
-        usecase UC4 as "View Metadata & Confidence"
-        usecase UC5 as "Copy Post to Clipboard"
-        usecase UC6 as "Review Generation History"
-        usecase UC7 as "Auto-detect Language"
-    }
-
-    User --> UC1
-    User --> UC2
-    User --> UC4
-    User --> UC5
-    User --> UC6
-
-    UC2 ..> UC3 : <<include>>
-    UC2 ..> UC7 : <<include>>
-    
-    UC3 --> LLM
-    UC2 --> LLM
-    UC7 --> LLM
-```
 
 ## How to Run
 1. **Install dependencies**:
